@@ -50,37 +50,6 @@ public:
   }
 
 
-
-  byte BitRead2(int aver = 200, int period  = 230, unsigned long timeOut = 600 ) {  // pulse 0 or 1 or -1 if timeout
-    aver+=30;
-    bool AcompState, AcompInitState;
-    unsigned long tEnd = micros() + timeOut;
- 
-    AcompInitState = (analogReadFast() > aver)  ; // читаем флаг компаратора
-    do {
-      AcompState = (analogReadFast() > aver);  // читаем флаг компаратора
-      if (AcompState != AcompInitState) {
-        tEnd = micros() + period; // (230)256 - 23 - 10
-        delayMicroseconds(1000 / (rfidBitRate * 6));    // 1/4 Period on 2 kBps = 125 mks
-       // delayMicroseconds(10); //128
-        AcompState = (analogReadFast() > aver) ;         // читаем флаг компаратора
-        // delayMicroseconds(1000 / (rfidBitRate * 2));  // 1/2 Period on 2 kBps = 250 mks
-        // delayMicroseconds(220); //256
-      /*  Serial.print("t = ");
-        Serial.println(tEnd - micros());*/
-        if (AcompState == AcompInitState) continue; //проверка на ошибку
-        delayMicroseconds((tEnd - micros()));
-        return AcompState;
-      }
-      //delayMicroseconds(10);
-    }
-    while (micros() < tEnd)
-      ;
-    return 2;  //таймаут, компаратор не сменил состояние
-  }
-
-
-
 //aver - среднее значение на порту A0
 byte BitRead(int aver = 500, unsigned long timeOut = 7000) {  // pulse 0 or 1 or -1 if timeout
     byte AcompState, AcompInitState;
